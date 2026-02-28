@@ -1,9 +1,15 @@
 import Groq from 'groq-sdk'
 
-const client = new Groq({
-  apiKey: import.meta.env.VITE_GROQ_API_KEY,
-  dangerouslyAllowBrowser: true,
-})
+let client = null
+function getClient() {
+  if (!client) {
+    client = new Groq({
+      apiKey: import.meta.env.VITE_GROQ_API_KEY,
+      dangerouslyAllowBrowser: true,
+    })
+  }
+  return client
+}
 
 export async function analyzeSoilRisk({ location, soil, climate, vegetation }) {
   const prompt = `You are an expert soil scientist and environmental analyst. Analyze the following real sensor and satellite data for a specific location and provide a soil degradation risk assessment.
@@ -47,7 +53,7 @@ Based on this data, respond with ONLY valid JSON in this exact structure:
 
 Be precise, scientific, and specific to the actual data values. Do not be generic.`
 
-  const response = await client.chat.completions.create({
+  const response = await getClient().chat.completions.create({
     model: 'llama-3.3-70b-versatile',
     messages: [{ role: 'user', content: prompt }],
     temperature: 0.3,
