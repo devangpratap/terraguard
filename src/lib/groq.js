@@ -61,7 +61,14 @@ RULES:
     "<recommendation>",
     "<recommendation>"
   ],
-  "timeHorizon": "<realistic timeline based on documented degradation rates for this region>"
+  "timeHorizon": "<realistic timeline based on documented degradation rates for this region>",
+  "farmerImpact": {
+    "viableYearsRemaining": "<estimated years of productive farming left at current degradation rate, e.g. '20-30 years'>",
+    "cropYieldImpact": "<% estimated yield reduction over next decade if no action taken, e.g. '15-25% reduction'>",
+    "recommendedCrops": ["<crop suited to current soil>", "<crop>", "<crop>"],
+    "urgency": "<one of: Monitor | Act Soon | Act Now | Emergency>",
+    "economicRisk": "<1 sentence on financial impact to farmers in this region>"
+  }
 }`
 
   const response = await getClient().chat.completions.create({
