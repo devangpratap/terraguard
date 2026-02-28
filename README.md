@@ -1,16 +1,24 @@
-# React + Vite
+# TerraGuard — Soil Degradation Risk Mapper
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TerraGuard is a predictive soil degradation risk tool. Enter any location on Earth and get a real-time risk score based on actual soil composition, climate history, and satellite vegetation data — analyzed by two independent AI models. Built to give farmers and landowners an early warning before soil damage becomes irreversible.
 
-Currently, two official plugins are available:
+**Live:** https://terraguard-five.vercel.app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## APIs Used
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| API | Purpose |
+|---|---|
+| [SoilGrids v2.0 (ISRIC)](https://rest.isric.org) | Soil composition — pH, organic carbon, clay %, nitrogen, bulk density |
+| [NASA POWER](https://power.larc.nasa.gov) | Climate data — 30yr rainfall, temperature, humidity, wind averages |
+| [OpenLandMap](https://api.openlandmap.org) | NDVI vegetation index from MODIS/Sentinel satellite imagery |
+| [Nominatim (OSM)](https://nominatim.openstreetmap.org) | Geocoding — converts location text to coordinates |
+| [Groq — LLaMA 3.3 70B](https://groq.com) | AI risk synthesis — scores degradation risk and generates recommendations |
+| [GreenPT — green-r-raw](https://greenpt.ai) | Sustainability scoring — carbon sequestration potential and regenerative practices |
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Stack
+
+React · Vite · Tailwind CSS · Leaflet.js · Bun · Vercel
