@@ -11,7 +11,7 @@ export async function fetchClimateData(lat, lon) {
 
   const url = `https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=${params}&community=AG&longitude=${lon}&latitude=${lat}&format=JSON`
 
-  const res = await fetch(url)
+  const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
   if (!res.ok) throw new Error(`NASA POWER error: ${res.status}`)
   const data = await res.json()
 
