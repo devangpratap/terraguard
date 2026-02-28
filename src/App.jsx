@@ -5,12 +5,14 @@ import ResultsPanel from './components/ResultsPanel'
 import { fetchSoilData } from './api/soilgrids'
 import { fetchClimateData } from './api/nasa'
 import { fetchVegetationData } from './api/openlandmap'
+import { fetchSustainabilityScore } from './api/greenpt'
 import { analyzeSoilRisk } from './lib/groq'
 
 export default function App() {
   const [location, setLocation] = useState(null)
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
+  const [greenptData, setGreenptData] = useState(null)
   const [rawData, setRawData] = useState(null)
   const [error, setError] = useState(null)
   const [step, setStep] = useState('')
@@ -20,6 +22,7 @@ export default function App() {
     setLoading(true)
     setError(null)
     setResult(null)
+    setGreenptData(null)
 
     try {
       setStep('Fetching soil composition data...')
@@ -43,8 +46,14 @@ export default function App() {
       const raw = { soil, climate, vegetation }
       setRawData(raw)
 
-      const analysis = await analyzeSoilRisk({ location: loc, ...raw })
+      // Run Groq + GreenPT in parallel
+      const [analysis, greenpt] = await Promise.all([
+        analyzeSoilRisk({ location: loc, ...raw }),
+        fetchSustainabilityScore({ location: loc, soil, climate }).catch(() => null),
+      ])
+
       setResult(analysis)
+      setGreenptData(greenpt)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -61,7 +70,7 @@ export default function App() {
           TG
         </div>
         <div>
-          <h1 className="text-sm font-bold text-green-100 leading-none">TerrаGuard</h1>
+          <h1 className="text-sm font-bold text-green-100 leading-none">TerraGuard</h1>
           <p className="text-xs text-green-700 mt-0.5">Soil Degradation Risk Mapper</p>
         </div>
         <div className="ml-auto">
@@ -75,7 +84,6 @@ export default function App() {
         <div className="flex-1 relative">
           <MapView location={location} />
 
-          {/* Loading overlay */}
           {loading && (
             <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-3 rounded-xl">
               <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
@@ -83,7 +91,6 @@ export default function App() {
             </div>
           )}
 
-          {/* Empty state */}
           {!loading && !result && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 pointer-events-none">
               <p className="text-green-800 text-sm font-medium">Search a location to begin analysis</p>
@@ -102,9 +109,9 @@ export default function App() {
 
           {!result && !error && !loading && (
             <div className="flex flex-col gap-4 text-xs text-green-700">
-              <p className="text-green-500 font-semibold text-sm">What is TerrаGuard?</p>
+              <p className="text-green-500 font-semibold text-sm">What is TerraGuard?</p>
               <p className="leading-relaxed">
-                TerrаGuard predicts soil degradation risk <strong className="text-green-400">before it happens</strong>.
+                TerraGuard predicts soil degradation risk <strong className="text-green-400">before it happens</strong>.
                 Enter any location to get a real-time risk score based on actual soil composition,
                 climate patterns, and vegetation health data.
               </p>
@@ -113,6 +120,7 @@ export default function App() {
                   ['SoilGrids (ISRIC)', 'pH, organic carbon, clay, nitrogen'],
                   ['NASA POWER', 'Rainfall, temperature, wind'],
                   ['OpenLandMap', 'NDVI, vegetation index'],
+                  ['GreenPT · green-r-raw', 'Sustainability & carbon scoring'],
                   ['Groq / LLaMA 3.3', 'AI risk synthesis'],
                 ].map(([src, desc]) => (
                   <div key={src} className="flex justify-between bg-[#111a11] rounded px-3 py-2">
@@ -124,7 +132,7 @@ export default function App() {
             </div>
           )}
 
-          <ResultsPanel result={result} rawData={rawData} />
+          <ResultsPanel result={result} rawData={rawData} greenptData={greenptData} />
         </div>
       </div>
     </div>

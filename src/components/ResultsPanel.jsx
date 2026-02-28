@@ -2,6 +2,7 @@ import { useState } from 'react'
 import RiskGauge from './RiskGauge'
 import FarmerPanel from './FarmerPanel'
 import WhyItMatters from './WhyItMatters'
+import GreenPTPanel from './GreenPTPanel'
 
 const statusColor = {
   Good: 'text-green-400',
@@ -15,9 +16,9 @@ const statusBg = {
   Critical: 'bg-red-400/10 border-red-400/20',
 }
 
-const TABS = ['Risk Analysis', 'Farmer View', 'Why It Matters']
+const TABS = ['Risk Analysis', 'Farmer View', 'Sustainability', 'Why It Matters']
 
-export default function ResultsPanel({ result, rawData }) {
+export default function ResultsPanel({ result, rawData, greenptData }) {
   const [tab, setTab] = useState('Risk Analysis')
 
   if (!result) return null
@@ -36,18 +37,21 @@ export default function ResultsPanel({ result, rawData }) {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-[#0d150d] rounded-lg p-1">
+      <div className="grid grid-cols-2 gap-1 bg-[#0d150d] rounded-lg p-1">
         {TABS.map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`flex-1 text-xs py-1.5 rounded-md font-medium transition-colors ${
+            className={`text-xs py-1.5 rounded-md font-medium transition-colors ${
               tab === t
                 ? 'bg-green-800 text-green-100'
                 : 'text-green-700 hover:text-green-400'
             }`}
           >
             {t}
+            {t === 'Sustainability' && (
+              <span className="ml-1 text-emerald-500 text-xs">✦</span>
+            )}
           </button>
         ))}
       </div>
@@ -119,6 +123,10 @@ export default function ResultsPanel({ result, rawData }) {
 
       {tab === 'Farmer View' && (
         <FarmerPanel farmerImpact={result.farmerImpact} />
+      )}
+
+      {tab === 'Sustainability' && (
+        <GreenPTPanel data={greenptData} />
       )}
 
       {tab === 'Why It Matters' && (
