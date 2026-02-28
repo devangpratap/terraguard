@@ -23,13 +23,21 @@ export default function App() {
 
     try {
       setStep('Fetching soil composition data...')
-      const soil = await fetchSoilData(loc.lat, loc.lon)
+      const soil = await fetchSoilData(loc.lat, loc.lon).catch(() => ({
+        ph: null, organicCarbon: null, clay: null,
+        sand: null, nitrogen: null, bulkDensity: null,
+      }))
 
       setStep('Pulling NASA climate records...')
-      const climate = await fetchClimateData(loc.lat, loc.lon)
+      const climate = await fetchClimateData(loc.lat, loc.lon).catch(() => ({
+        annualRainfallMm: null, avgTempC: null, maxTempC: null,
+        minTempC: null, avgHumidityPct: null, avgWindSpeedMs: null,
+      }))
 
       setStep('Reading vegetation index...')
-      const vegetation = await fetchVegetationData(loc.lat, loc.lon)
+      const vegetation = await fetchVegetationData(loc.lat, loc.lon).catch(() => ({
+        landCoverCode: null, ndvi: null,
+      }))
 
       setStep('Running AI risk analysis...')
       const raw = { soil, climate, vegetation }
